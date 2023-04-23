@@ -3,25 +3,27 @@ package ru.netology.rest.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import ru.netology.rest.authorities.Authorities;
 import ru.netology.rest.exceptions.InvalidCredentials;
 import ru.netology.rest.exceptions.UnauthorizedUser;
+import ru.netology.rest.model.LoginUser;
+import ru.netology.rest.model.User;
 import ru.netology.rest.service.AuthorizationService;
 
+import javax.validation.Valid;
 import java.util.List;
 
+@Validated
 @RestController
 @AllArgsConstructor
 public class AuthorizationController {
     AuthorizationService service;
 
-    @GetMapping("/authorize")
-    public List<Authorities> getAuthorities(@RequestParam("user") String user, @RequestParam("password") String password) {
-        return service.getAuthorities(user, password);
+    @GetMapping(value="/authorize")
+    public List<Authorities> getAuthorities(@Valid @LoginUser User user) {
+        return service.getAuthorities(user);
     }
     @ExceptionHandler(InvalidCredentials.class)
     public ResponseEntity<String> handleInvalidCredentials (InvalidCredentials e) {
